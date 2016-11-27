@@ -1,5 +1,7 @@
 var Button = ReactBootstrap.Button;
 var Table = ReactBootstrap.Table;
+var Form = ReactBootstrap.Form;
+var Input = ReactBootstrap.Input;
 
 function TableEntry(props) {
   return (
@@ -18,13 +20,11 @@ function TableEntry(props) {
 class UserList extends React.Component{
   constructor() {
     super();
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.state = {
-      users: [
-      {username: "Otto", coffees: 2},
-      {username: "Klaus", coffees: 3},
-      {username: "Kevin", coffees: 10},
-      {username: "Jochen", coffees: 20}
-      ]
+      users: [],
+      cur_username: "",
     };
   }
 
@@ -33,60 +33,56 @@ class UserList extends React.Component{
     users[position].coffees = users[position].coffees + 1;
     this.setState({
       users: users,
-    })
+    });
+  }
+
+  handleChange(e) {
+    this.setState({cur_username: e.target.value});
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    this.setState({
+      users: this.state.users.concat([{
+        username: this.state.cur_username,
+        coffees: 0
+      }]),
+      cur_username: "",
+    });
   }
 
   render() {
     const userlist = this.state.users.map((cur_user, position) => {
         return (
-          <TableEntry key={position} user={cur_user} pos={position + 1}onClick={() => this.handleClick(position)}/>
+          <TableEntry key={position} user={cur_user} pos={position + 1} onClick={() => this.handleClick(position)}/>
         );
       });
     return (
-      <Table striped bordered condensed hover>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Coffees</th>
-            <th>Add Coffee</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userlist}
-        </tbody>
-      </Table>
+      <div>
+        {this.state.users.length < 1 ? null :
+        <Table striped bordered condensed hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Coffees</th>
+              <th>Add Coffee</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userlist}
+          </tbody>
+        </Table>
+        }
+        <div>
+          <form onSubmit={this.handleSubmit}>
+            <input onChange={this.handleChange} value={this.state.cur_username} placeholder="Name"/>
+            <button>Add new user</button>
+          </form>
+        </div>
+      </div>
     )
   }
 }
 
 ReactDOM.render(<UserList />, document.getElementById('react-container'));
-
-
-
-// class ButtonCounter extends React.Component {
-//   constructor(probs) {
-//     super(probs);
-//     this.state = {
-//       counter: 0
-//     };
-//   }
-
-//   add() {
-//     this.setState({counter: this.state.counter + 1});
-//   }
-
-//   render() {
-//     return(
-//       <div>
-//         <button onClick={this.add.bind(this)}>
-//           +
-//         </button>
-//         <p>Count: {this.state.counter}</p>
-//       </div>
-//     );
-//   }
-// };
-
-// ReactDOM.render(<ButtonCounter />, document.getElementById('react-container'));
-// ReactDOM.render(<ButtonCounter />, document.getElementById('react-container-2'));
